@@ -1,6 +1,7 @@
 library(mvtnorm)
 library(parallel)
 library(evd)
+library(mgcv)
 
 ## Set the working directory as you want ##
 setwd("~/max_id_project/")
@@ -118,7 +119,7 @@ for(s in s.list){
 }
 dev.off()
 
-### fit the dependence model using the real data ###
+### fit the dependence model using the real data ### (BEWARE: this is very intensive and will take hours!!!)
 fit.result <- fit.pw.parallel(init=init,datU = U,coord=coord,reg=reg,reg.t=reg.t,cutoff=Inf,proppairs= 1,fixed=rep(F,6),optim =T, hessian=F,sandwich=F,eps = 10^(-2), print.par.file=NULL,ncores=ncores,fit.load=F, fit.save=F,fit.file=NULL)
 
   
