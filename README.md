@@ -9,8 +9,13 @@ To reproduce the results, you can load the data.Rdata file and replace the corre
 Varaiables in the data.Rdata file:
 
 data.info: the station index and details extracted from the original dataset available from https://www.ecad.eu//dailydata/predefinedseries.php.
+
 coord: distance matrix (unit: 1000km) of 44 stations.
+
 data: aggregated yearly maximum temperature for 44 stations.
+
 U: pesudo uniform data transfered using the fitted Generalized additive model with penalized cubic regression spline.
+
 reg: spatial covariates linked to range parameter (intercept and altitiude (km)).
+
 reg.t: temporal covariates (equally spaced between 0 and 1).
