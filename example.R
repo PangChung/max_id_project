@@ -78,6 +78,47 @@ init[1:2] <- log(init[1:2])
 ### Fit the model. It will take hours. ###
 fit.result <- fit.pw.parallel(init=init,datU = U,coord=coord,reg=reg,reg.t=reg.t,cutoff=cutoff,proppairs= 1,fixed=fixed,optim =T, hessian=F,sandwich=F,eps = 10^(-2), print.par.file=NULL,ncores=ncores,fit.load=F, fit.save=F,fit.file=NULL)
 
+##########################################################
+######## Fit using the real data in our application ######
+##########################################################
 
+## if we use the real data to fit the marginal model, please load data.Rdata ##
+load("data.Rdata")
+y = as.vector(data)
+id = rep(1:ncol(data),each=nrow(data))
+t = rep((1:nrow(data))/nrow(data),times=44)
+alt = rep(reg[,2],each=nrow(data))
+lat = rep(data.info$LAT,each=nrow(data))
+lon = rep(data.info$LON,each=nrow(data))
+dat.mar.fit <- data.frame(y=y,t=t,alt=alt,lat=lat,lon=lon,id=id)[!is.na(y),]
+# fit the marginal model
+marginal.fit<-gam(list(y~ti(lon,lat,alt,k=5)+ti(t),~1,~1),family=gevlss,data=dat.mar.fit)
+
+fitted.parameters <- fitted(marginal.fit)
+
+## Figure 5 in the manuscript ##
+pdf("return_level.pdf",width = 3*3,height=3)
+par(mfrow=c(1,3),cex.main=2,mgp=c(2,1,0),cex.lab=2,mar=c(2,4,2,0.5))
+s.list = c(9,27,32)
+for(s in s.list){
+  ylab=expression("Temperature ("*~degree*C*")")
+  level.y <- (1917+c(1:101))[!is.na(data[,s])]
+  level.1000<-(fitted.parameters[dat.mar.fit$id==s,1]+qgev(1-1/1000,scale=exp(2.871183),shape=-0.1986207))/10
+  level.100<-(fitted.parameters[dat.mar.fit$id==s,1]+qgev(1-1/100,scale=exp(2.871183),shape=-0.1986207))/10
+  level.10<-(fitted.parameters[dat.mar.fit$id==s,1]+qgev(1-1/10,scale=exp(2.871183),shape=-0.1986207))/10
+  level.trend<-fitted.parameters[dat.mar.fit$id==s,1]/10
+  level.data<-c(data[,s],data.2019[s])/10
+  plot(1917+c(1:102),level.data,col=c(rep("black",101),"red"),ylim=c(min(level.data,na.rm = T)-0.5,max(level.1000)+0.5),cex=0.8,main=paste0("Station ",s),xlab="",ylab=ylab)
+  lines(level.y,level.trend,col="black",lwd=1,lty=1)
+  lines(level.y,level.1000,col=rgb(1,0,0,1),lwd=1)
+  lines(level.y,level.100,col=rgb(1,0,0,0.8),lwd=1)
+  lines(level.y,level.10,col=rgb(1,0,0,0.5),lwd=1)
+  abline(h=data.2019[s]/10,lty=2,col="black")
+  abline(v=c(1950,1975,2000,2018),lty=2)
+}
+dev.off()
+
+### fit the dependence model using the real data ###
+fit.result <- fit.pw.parallel(init=init,datU = U,coord=coord,reg=reg,reg.t=reg.t,cutoff=Inf,proppairs= 1,fixed=rep(F,6),optim =T, hessian=F,sandwich=F,eps = 10^(-2), print.par.file=NULL,ncores=ncores,fit.load=F, fit.save=F,fit.file=NULL)
 
   
