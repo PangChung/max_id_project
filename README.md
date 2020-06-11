@@ -12,7 +12,7 @@ data.info: the station index and details extracted from the original dataset ava
 
 coord: distance matrix (unit: 1000km) of 44 stations.
 
-data: aggregated yearly maximum temperature for 44 stations.
+data: aggregated yearly maximum temperature (unit: 0.1C) for 44 stations.
 
 U: pesudo uniform data transfered using the fitted Generalized additive model with penalized cubic regression spline.
 
