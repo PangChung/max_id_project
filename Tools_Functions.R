@@ -73,7 +73,7 @@ rho.func <- function(h,r=NULL,parGauss,reg=NULL,reg.t=NULL,mat=F){
   a = parGauss$a; theta = parGauss$theta; nu = parGauss$nu;
   if(type==1){
     rho.temp = h^2/lambda^2
-    rho.r = exp(-sqrt(rho.temp))
+    rho.r = exp(-sqrt(rho.temp)^nu)
     if(mat){return(matrix(c(1,rho.r,rho.r,1),nrow=2,byrow=T))}
     else{return(rho.r)}
   }
@@ -413,7 +413,7 @@ rmaxidspat <- function(n, coord, parR, parGauss,reg=NULL,reg.t=NULL, N=1000, nco
 #pairwise copula likelihood computed in parallel
 pw.nllik.parallel <- function(parR,parGauss,datU,new.pair,reg=NULL,reg.t=NULL,coord,doSum=TRUE,print.par.file=NULL,ncores=1){ #negative pairwise log likelihood (for the copula)
   if(parGauss$type==1){
-    if (parR[1]<=0  |parR[1]>10 |parR[2]<0 | parR[2]>20 | parGauss$lambda<=0){return(Inf)} 
+    if (parR[1]<=0  | parR[1]>10 |parR[2]<0 | parR[2]>20 | parGauss$lambda<=0 | parGauss$nu <0.1 | parGauss$nu > 1.99){return(Inf)} 
   }
   if(parGauss$type==2){
     if (parR[1]<=0  |parR[1]>10 |parR[2]<0 | parR[2]>20 ){return(Inf)} 
@@ -480,7 +480,7 @@ pw.nllik.parallel <- function(parR,parGauss,datU,new.pair,reg=NULL,reg.t=NULL,co
 get.par <- function(par,type=4){
   parR <- exp(par[1:2])
   parGauss<-list(type=type,lambda=NULL,lambda.t=NULL,a=NULL,theta=NULL,nu=NULL)
-  if(type==1){parGauss$lambda=exp(par[3])}
+  if(type==1){parGauss$lambda=exp(par[3]);parGauss$nu = par[4]}
   if(type==2){parGauss$lambda=par[3:4];parGauss$lambda.t=par[5]}
   if(type==3){parGauss$lambda=exp(par[3]);parGauss$a=exp(par[4]);parGauss$theta=par[5]}
   if(type==4){parGauss$nu=par[6];parGauss$lambda=par[3:4];parGauss$lambda.t=par[5]}

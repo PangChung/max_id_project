@@ -61,8 +61,8 @@ parR = c(alpha,beta)
 parGauss = list(lambda=c(lambda.0,lambda.1),lambda.t=lambda.2,a=a,theta=theta,nu=nu,type=4) ##type here is just to denote the format of parameter space, fixed to be 4 in this toy example, please don't change it.###
 
 ### sample the max-id processes on the grid (takes a minute)###
-ncores=40 ## number of cores available.
-Z<-rmaxidspat(n,coord,parR,parGauss,reg=reg,reg.t=reg.t,N=1000,ncores=ncores) ## you can use multiple cores to speed up ##
+ncores= 10## number of cores available.
+Z<-rmaxidspat(n,coord,parR,parGauss,reg=reg,reg.t=reg.t,N=100,ncores=ncores) ## you can use multiple cores to speed up ##
 
 ### transform the original data into pseudo uniform scores. 
 U <- matrix(pG(Z,parR),nrow=n)
@@ -122,4 +122,17 @@ dev.off()
 ### fit the dependence model using the real data ### (BEWARE: this is very intensive and will take hours!!!)
 fit.result <- fit.pw.parallel(init=init,datU = U,coord=coord,reg=reg,reg.t=reg.t,cutoff=Inf,proppairs= 1,fixed=rep(F,6),optim =T, hessian=F,sandwich=F,eps = 10^(-2), print.par.file=NULL,ncores=ncores,fit.load=F, fit.save=F,fit.file=NULL)
 
-  
+### Code for Yiyi ###
+library(mvtnorm)
+library(parallel)
+library(evd)
+source("Tools_Functions.R")
+data <- t(as.matrix(read.csv("~/Downloads/Yiyi/frechet_m_1990_2020.csv")))
+coord <- as.matrix(read.csv("~/Downloads/Yiyi/coordinates.csv"))
+data <- pgev(data,loc=1,scale=1,shape=0)
+distmat <- as.matrix(dist(coord))
+init = c(1,1,1)
+init <- log(init)
+set.seed(13234)
+ncores=5
+fit.result <- fit.pw.parallel(init=init,datU = data,coord=distmat,type=1,cutoff=Inf,proppairs= 1,fixed=rep(F,3),optim =T, hessian=F,sandwich=F,eps = 10^(-2), print.par.file=NULL,ncores=ncores,fit.load=F, fit.save=F,fit.file=NULL)
