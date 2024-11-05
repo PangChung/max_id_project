@@ -129,10 +129,10 @@ library(evd)
 source("Tools_Functions.R")
 data <- t(as.matrix(read.csv("~/Downloads/Yiyi/frechet_m_1990_2020.csv")))
 coord <- as.matrix(read.csv("~/Downloads/Yiyi/coordinates.csv"))
-data <- pgev(data,loc=1,scale=1,shape=0)
-distmat <- as.matrix(dist(coord))
+data <- pgev(data,loc=1,scale=1,shape=0) ## transform it into pseudo uniform scores
+distmat <- as.matrix(dist(coord)) ## distance matrix
 init = c(1,1,1,1) 
 init[1:3] <- log(init[1:3]) # the first three parameters are in log scale
 set.seed(13234)
 ncores=5
-fit.result <- fit.pw.parallel(init=init,datU = data,coord=distmat,type=1,cutoff=Inf,proppairs= 1,fixed=rep(F,3),optim =T, hessian=F,sandwich=F,eps = 10^(-2), print.par.file=NULL,ncores=ncores,fit.load=F, fit.save=F,fit.file=NULL)
+fit.result <- fit.pw.parallel(init=init,datU = data,coord=distmat,type=1,cutoff=Inf,proppairs= 1,fixed=rep(F,3),optim =T, hessian=F,sandwich=F, eps = 10^(-2), print.par.file=NULL,ncores=ncores,fit.load=F, fit.save=F,fit.file=NULL)
